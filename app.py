@@ -23,10 +23,14 @@ app = Flask(__name__)
 # -----------------------------------------------------------
 # Configuration (inchangée depuis l'étape précédente)
 # -----------------------------------------------------------
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///recu_facile.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'change-cette-cle-avant-la-mise-en-ligne'
 
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///recu_facile.db')
+
+if app.config['SQLALCHEMY_DATABASE_URI'].startswith("postgres://"):
+    app.config['SQLALCHEMY_DATABASE_URI'] = app.config['SQLALCHEMY_DATABASE_URI'].replace("postgres://", "postgresql://", 1)
+
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'une-cle-secrete-par-defaut')
 # Dossier où seront enregistrées les images de logo envoyées par les
 # commerçants. os.path.join construit le chemin correctement quel
 # que soit le système d'exploitation (Windows, Linux, Mac).
