@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block titre %}Reçu généré — Reçu Facile{% endblock %}
+
+{% block contenu %}
+<div class="shell">
+  {% include "_sidebar.html" %}
+
+  <div class="content" style="display:flex; flex-direction:column; align-items:center;">
+    <div style="max-width:340px; width:100%;">
+      <div class="succes">Reçu enregistré avec succès !</div>
+
+      <div class="receipt" id="receiptCard">
+        <div class="r-logo">
+          {% if current_user.logo %}
+            <img src="{{ url_for('static', filename=current_user.logo) }}">
+          {% else %}
+            {{ current_user.nom_commerce[:2]|upper }}
+          {% endif %}
+        </div>
+        <div class="r-brand">
+          <div class="name">{{ current_user.nom_commerce }}</div>
+          <div class="tag">Reçu de vente</div>
+        </div>
+        <div class="r-divider"></div>
+        <div class="r-meta">
+          <span>{{ recu.date_recu.strftime('%d/%m/%Y') }}</span>
+          <span>N° {{ "%04d"|format(recu.id) }}</span>
+        </div>
+        <div class="r-client">Client : <b>{{ recu.nom_client }}</b></div>
+        <div class="r-items">
+          {% for article in recu.articles %}
+            <div class="r-item">
+              <span><span class="qty">{{ article.quantite|int }}×</span>{{ article.nom_article }}</span>
+              <span>{{ "%.0f"|format(article.quantite * article.prix_unitaire) }} F</span>
+            </div>
+          {% endfor %}
+        </div>
+        <div class="r-total-row"><span>TOTAL</span><span>{{ "%.0f"|format(recu.montant_total) }} F</span></div>
+        <div class="r-footer">Merci pour votre confiance</div>
+      </div>
+
+      <div class="actions">
+        {% if lien_whatsapp %}
+          <a href="{{ lien_whatsapp }}" target="_blank" class="primary">Envoyer sur WhatsApp</a>
+        {% endif %}
+        <a href="{{ url_for('nouveau_recu') }}">+ Nouveau reçu</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

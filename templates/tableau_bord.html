@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block titre %}Tableau de bord — Reçu Facile{% endblock %}
+
+{% block contenu %}
+<div class="shell">
+  {% include "_sidebar.html" %}
+
+  <div class="content">
+    <div class="content-head">
+      <p class="eyebrow">Tableau de bord</p>
+      <h2 style="font-size:22px;">Ce que vous avez encaissé</h2>
+      <p class="sub">Vue d'ensemble de vos ventes, calculée à partir de vos reçus.</p>
+    </div>
+
+    <div class="kpi-row">
+      <div class="kpi">
+        <div class="k-label">AUJOURD'HUI</div>
+        <div class="k-val ochre">{{ "%.0f"|format(total_aujourdhui) }} F</div>
+      </div>
+      <div class="kpi">
+        <div class="k-label">CETTE SEMAINE</div>
+        <div class="k-val">{{ "%.0f"|format(total_semaine) }} F</div>
+      </div>
+      <div class="kpi">
+        <div class="k-label">REÇUS ÉMIS (7J)</div>
+        <div class="k-val">{{ nombre_recus_semaine }}</div>
+      </div>
+    </div>
+
+    {% if totaux_par_jour %}
+      <table>
+        <thead><tr><th>Date</th><th>Nombre de reçus</th><th>Total encaissé</th></tr></thead>
+        <tbody>
+          {% for jour in totaux_par_jour %}
+            <tr>
+              <td data-label="Date">{{ jour.jour }}</td>
+              <td data-label="Reçus">{{ jour.nombre }}</td>
+              <td class="amt" data-label="Total">{{ "%.0f"|format(jour.total) }} F</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p style="color:var(--ink-dim); font-size:13px;">Pas encore de reçu enregistré — génère ton premier reçu pour voir apparaître tes ventes ici.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

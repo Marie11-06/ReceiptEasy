@@ -1,0 +1,25 @@
+{# =============================================================
+   _sidebar.html
+   =============================================================
+   Ce fichier n'est pas une page à part entière : c'est un
+   "morceau" de HTML réutilisé par plusieurs pages (tableau de
+   bord, nouveau reçu, mes reçus), pour ne pas recopier le menu
+   3 fois.
+
+   La variable "page_active" (passée par chaque page) permet de
+   savoir quel lien du menu doit être surligné en ocre.
+============================================================= #}
+<aside class="sidebar">
+  <div class="sb-brand"><div class="mark">R</div><div class="txt">Reçu Facile</div></div>
+  <div class="sb-shop">{{ current_user.nom_commerce }}</div>
+
+  <a href="{{ url_for('tableau_bord') }}" class="sb-link {% if page_active == 'dashboard' %}active{% endif %}">
+    <span class="sb-dot"></span>Tableau de bord
+  </a>
+  <a href="{{ url_for('nouveau_recu') }}" class="sb-link {% if page_active == 'newreceipt' %}active{% endif %}">
+    <span class="sb-dot"></span>Nouveau reçu
+  </a>
+  <a href="{{ url_for('mes_recus') }}" class="sb-link {% if page_active == 'receipts' %}active{% endif %}">
+    <span class="sb-dot"></span>Mes reçus
+  </a>
+</aside>

@@ -1,0 +1,27 @@
+<!-- =============================================================
+     base.html
+     =============================================================
+     C'est le "squelette" commun à toutes les pages du site.
+     Chaque page (inscription, connexion, ...) va compléter la
+     zone "contenu" définie plus bas avec son propre contenu.
+     Ça évite de recopier le head, le lien vers style.css, etc.
+     dans chaque fichier.
+============================================================== -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block titre %}Reçu Facile{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  {% block contenu %}
+  <!-- Chaque page remplira cette partie -->
+  {% endblock %}
+
+</body>
+</html>

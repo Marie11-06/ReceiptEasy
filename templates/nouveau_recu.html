@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% block titre %}Nouveau reçu — Reçu Facile{% endblock %}
+
+{% block contenu %}
+<div class="shell">
+  {% include "_sidebar.html" %}
+
+  <div class="content">
+    <div class="content-head">
+      <p class="eyebrow">Nouveau reçu</p>
+      <h2 style="font-size:22px;">Générer un reçu</h2>
+    </div>
+
+    <div class="gen-grid">
+      <!-- ---- Colonne de gauche : le formulaire ---- -->
+      <div class="panel">
+        <form method="POST" id="formulaireRecu">
+          <label>Client</label>
+          <input type="text" id="clientName" name="nom_client" value="Client comptoir">
+
+          <label>Numéro WhatsApp du client (facultatif, avec indicatif)</label>
+          <input type="text" name="telephone_client" placeholder="22997000000">
+
+          <div class="row2">
+            <div>
+              <label>Date</label>
+              <input type="date" id="rDate" name="date_recu">
+            </div>
+          </div>
+
+          <div class="items-head">
+            <label>Articles</label>
+            <button id="addItem" type="button">+ Ajouter</button>
+          </div>
+
+          <!-- C'est ici que le JavaScript ajoute des lignes d'article -->
+          <div id="itemsList"></div>
+
+          <button class="btn-primary" style="margin-top:20px;" type="submit">Enregistrer le reçu</button>
+        </form>
+      </div>
+
+      <!-- ---- Colonne de droite : l'aperçu papier, mis à jour en direct ---- -->
+      <div>
+        <div class="receipt" id="receiptCard">
+          <div class="r-logo" id="rLogo">
+            {% if current_user.logo %}
+              <img src="{{ url_for('static', filename=current_user.logo) }}">
+            {% else %}
+              {{ current_user.nom_commerce[:2]|upper }}
+            {% endif %}
+          </div>
+          <div class="r-brand">
+            <div class="name">{{ current_user.nom_commerce }}</div>
+            <div class="tag">Reçu de vente</div>
+          </div>
+          <div class="r-divider"></div>
+          <div class="r-meta"><span id="pDate">—</span><span>Aperçu</span></div>
+          <div class="r-client">Client : <b id="pClient">Client comptoir</b></div>
+          <div class="r-items" id="pItems"></div>
+          <div class="r-total-row"><span>TOTAL</span><span id="pTotal">0 F</span></div>
+          <div class="r-footer">Merci pour votre confiance</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  /*
+    =========================================================
+    Ajout dynamique des lignes d'article
+    =========================================================
+    Chaque ligne a 3 champs nommés avec des crochets [] :
+    "nom_article[]", "quantite[]", "prix[]". Flask les recevra
+    sous forme de listes (une valeur par article) grâce à
+    request.form.getlist() côté serveur.
+  */
+  const zoneArticles = document.getElementById('itemsList');
+  const zoneApercuArticles = document.getElementById('pItems');
+  const zoneApercuTotal = document.getElementById('pTotal');
+  const zoneApercuClient = document.getElementById('pClient');
+  const zoneApercuDate = document.getElementById('pDate');
+
+  function formaterEnFrancsCFA(nombre) {
+    return nombre.toLocaleString('fr-FR') + ' F';
+  }
+
+  function ajouterUneLigneArticle(nom = '', quantite = 1, prix = '') {
+    const ligne = document.createElement('div');
+    ligne.className = 'item-row';
+    ligne.innerHTML =
+      '<input type="text" name="nom_article[]" placeholder="Article" class="i-name" value="' + nom + '" required>' +
+      '<input type="number" name="quantite[]" placeholder="Qté" class="i-qty" min="1" value="' + quantite + '" required>' +
+      '<input type="number" name="prix[]" placeholder="Prix" class="i-price" min="0" value="' + prix + '" required>' +
+      '<button class="rm" type="button">×</button>';
+
+    zoneArticles.appendChild(ligne);
+
+    const champs = ligne.querySelectorAll('input');
+    for (let i = 0; i < champs.length; i++) {
+      champs[i].addEventListener('input', recalculerLApercu);
+    }
+
+    ligne.querySelector('.rm').addEventListener('click', function () {
+      ligne.remove();
+      recalculerLApercu();
+    });
+
+    recalculerLApercu();
+  }
+
+  document.getElementById('addItem').addEventListener('click', function () {
+    ajouterUneLigneArticle();
+  });
+  document.getElementById('clientName').addEventListener('input', recalculerLApercu);
+  document.getElementById('rDate').addEventListener('input', recalculerLApercu);
+
+  function recalculerLApercu() {
+    zoneApercuClient.textContent = document.getElementById('clientName').value || 'Client comptoir';
+
+    const dateChoisie = document.getElementById('rDate').value;
+    zoneApercuDate.textContent = dateChoisie
+      ? new Date(dateChoisie).toLocaleDateString('fr-FR')
+      : '—';
+
+    zoneApercuArticles.innerHTML = '';
+    let total = 0;
+
+    const lignes = zoneArticles.querySelectorAll('.item-row');
+    for (let i = 0; i < lignes.length; i++) {
+      const ligne = lignes[i];
+      const nom = ligne.querySelector('.i-name').value || 'Article';
+      const quantite = parseFloat(ligne.querySelector('.i-qty').value) || 0;
+      const prix = parseFloat(ligne.querySelector('.i-price').value) || 0;
+      const sousTotal = quantite * prix;
+      total += sousTotal;
+
+      const div = document.createElement('div');
+      div.className = 'r-item';
+      div.innerHTML = '<span><span class="qty">' + quantite + '×</span>' + nom + '</span><span>' + formaterEnFrancsCFA(sousTotal) + '</span>';
+      zoneApercuArticles.appendChild(div);
+    }
+
+    zoneApercuTotal.textContent = formaterEnFrancsCFA(total);
+  }
+
+  // Valeurs de départ
+  document.getElementById('rDate').valueAsDate = new Date();
+  ajouterUneLigneArticle();
+</script>
+{% endblock %}

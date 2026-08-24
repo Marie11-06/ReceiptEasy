@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block titre %}Mes reçus — Reçu Facile{% endblock %}
+
+{% block contenu %}
+<div class="shell">
+  {% include "_sidebar.html" %}
+
+  <div class="content">
+    <div class="content-head">
+      <p class="eyebrow">Historique</p>
+      <h2 style="font-size:22px;">Mes reçus</h2>
+      <p class="sub">Tous les reçus que vous avez générés, du plus récent au plus ancien.</p>
+    </div>
+
+    {% if recus %}
+      <table>
+        <thead><tr><th>N°</th><th>Date</th><th>Client</th><th>Articles</th><th>Total</th></tr></thead>
+        <tbody>
+          {% for recu in recus %}
+            <tr>
+              <td data-label="N°">{{ "%04d"|format(recu.id) }}</td>
+              <td data-label="Date">{{ recu.date_recu.strftime('%d/%m/%Y') }}</td>
+              <td data-label="Client">{{ recu.nom_client }}</td>
+              <td data-label="Articles">{{ recu.articles|length }} article(s)</td>
+              <td class="amt" data-label="Total">{{ "%.0f"|format(recu.montant_total) }} F</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p style="color:var(--ink-dim); font-size:13px;">Aucun reçu généré pour l'instant.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

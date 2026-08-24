@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block titre %}Connexion — Reçu Facile{% endblock %}
+
+{% block contenu %}
+<div class="auth-wrap">
+  <div class="auth-logo">
+    <div class="mark">R</div>
+    <h1 style="font-size:20px;">Reçu Facile</h1>
+  </div>
+
+  <div class="auth-panel">
+    {% if erreur %}
+      <div class="erreur">{{ erreur }}</div>
+    {% endif %}
+
+    <h2 style="font-size:16px;">Connexion</h2>
+    <form method="POST">
+      <label>Email</label>
+      <input type="email" name="email" placeholder="ex : boutique@email.com" required>
+
+      <label>Mot de passe</label>
+      <input type="password" name="mot_de_passe" placeholder="••••••••" required>
+
+      <button class="btn-primary" style="margin-top:18px;" type="submit">Se connecter</button>
+    </form>
+  </div>
+
+  <div class="auth-foot">
+    Pas encore de compte ? <a href="{{ url_for('inscription') }}">Créer un compte</a>
+  </div>
+</div>
+{% endblock %}

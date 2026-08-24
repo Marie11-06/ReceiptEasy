@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block titre %}Créer un compte — Reçu Facile{% endblock %}
+
+{% block contenu %}
+<div class="auth-wrap">
+  <div class="auth-logo">
+    <div class="mark">R</div>
+    <h1 style="font-size:20px;">Créer un compte</h1>
+  </div>
+
+  <div class="auth-panel">
+
+    <!-- Si app.py nous a envoyé un message d'erreur, on l'affiche ici -->
+    {% if erreur %}
+      <div class="erreur">{{ erreur }}</div>
+    {% endif %}
+
+    <!-- method="POST" veut dire que les données du formulaire seront
+         envoyées de façon "cachée" (pas dans l'adresse du site) -->
+    <!-- enctype="multipart/form-data" est OBLIGATOIRE dès qu'un
+         formulaire contient un champ pour envoyer un fichier -->
+    <form method="POST" enctype="multipart/form-data">
+      <label>Nom du commerce</label>
+      <input type="text" name="nom_commerce" placeholder="ex : Boutique Merveille" required>
+
+      <label>Email</label>
+      <input type="email" name="email" placeholder="ex : boutique@email.com" required>
+
+      <label>Mot de passe</label>
+      <input type="password" name="mot_de_passe" placeholder="Choisir un mot de passe" required>
+
+      <label>Logo du commerce (facultatif)</label>
+      <input type="file" name="logo" accept="image/*">
+
+      <button class="btn-primary" style="margin-top:20px;" type="submit">Créer mon compte</button>
+    </form>
+  </div>
+
+  <div class="auth-foot">
+    Déjà un compte ? <a href="{{ url_for('connexion') }}">Se connecter</a>
+  </div>
+</div>
+{% endblock %}
